@@ -48,6 +48,7 @@ jobs:
     #         -r ${{ matrix.platform[1] }}
 
     - name: Build CLI
+      shell: bash
       run: |
         dotnet publish ${{ env.cli-proj-path }} \
           -c Release \
@@ -61,6 +62,7 @@ jobs:
         zip -r artifact/OpenSvip-Console-${{ matrix.platform[1] }}.zip ${{ env.cli-proj-path }}/out/${{ matrix.platform[1] }}/* -x "*.pdb"
 
     - name: Build Plugins
+      shell: bash
       run: |
         set -e
 
