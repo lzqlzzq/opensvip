@@ -5,9 +5,9 @@ env:
   cli-proj-path: csharp/Console
   plugin-proj-path: csharp/Plugins
   dotnet-version: "7.0"
-  plugins:
-    - Midi
-    - SynthV
+  plugins: |
+    Midi
+    SynthV
 
 
 on:
