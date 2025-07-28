@@ -43,9 +43,9 @@ jobs:
     - name: Create Artifact Directory
       run: mkdir artifact
 
-    - name: Restore Denepndicies
-      run: dotnet restore ${{ env.solution-path }} \
-            -r ${{ matrix.platform[1] }}
+    # - name: Restore Denepndicies
+    #   run: dotnet restore ${{ env.solution-path }} \
+    #         -r ${{ matrix.platform[1] }}
 
     - name: Build CLI
       run: |
@@ -53,7 +53,6 @@ jobs:
           -c Release \
           -r ${{ matrix.platform[1] }} \
           --self-contained \
-          --no-restore \
           -p:PublishSingleFile=true \
           -p:PublishReadyToRun=true \
           -p:IncludeNativeLibrariesForSelfExtract=true
@@ -68,7 +67,6 @@ jobs:
           dotnet build ${{ env.plugin-proj-path }}/$plugin \
             -c Release \
             -r ${{ matrix.platform[1] }} \
-            --no-restore \
             --no-self-contained
 
           zip -r artifact/OpenSvip-Plugin-$plugin-${{ matrix.platform }}.zip -x "*.pdb" ${{ env.plugin-proj-path }}/$plugin/bin/Release/net*/${{ matrix.platform[1]}}/*
