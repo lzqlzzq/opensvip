@@ -56,9 +56,9 @@ jobs:
           -p:PublishSingleFile=true \
           -p:PublishReadyToRun=true \
           -p:IncludeNativeLibrariesForSelfExtract=true \
-          -p:PublishDir=out/publish/${{ matrix.platform[1] }}/
+          -p:PublishDir=out/${{ matrix.platform[1] }}/
 
-        zip -r artifact/OpenSvip-Console-${{ matrix.platform[1] }}.zip -x "*.pdb" out/publish/${{ matrix.platform[1] }}/*
+        zip -r artifact/OpenSvip-Console-${{ matrix.platform[1] }}.zip -x "*.pdb" ${{ env.cli-proj-path }}/out/${{ matrix.platform[1] }}/*
 
     - name: Build Plugins
       run: |
@@ -68,9 +68,10 @@ jobs:
           dotnet build ${{ env.plugin-proj-path }}/$plugin \
             -c Release \
             -r ${{ matrix.platform[1] }} \
-            --no-self-contained
+            --no-self-contained \
+            -p:PublishDir=out/${{ matrix.platform[1] }}/
 
-          zip -r artifact/OpenSvip-Plugin-$plugin-${{ matrix.platform[1] }}.zip -x "*.pdb" ${{ env.plugin-proj-path }}/$plugin/bin/Release/net*/${{ matrix.platform[1]}}/*
+          zip -r artifact/OpenSvip-Plugin-$plugin-${{ matrix.platform[1] }}.zip -x "*.pdb" ${{ env.plugin-proj-path }}/$plugin/out/${{ matrix.platform[1]}}/*
         done
 
     - name: Upload Build Artifact
