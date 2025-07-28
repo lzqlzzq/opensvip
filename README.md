@@ -105,6 +105,14 @@ OpenSvip.Console.exe plugins
 OpenSvip.Console.exe plugins -d <插件标识符>
 ```
 
+#### 安装插件
+
+可以使用以下命令安装插件：
+
+```shell
+OpenSvip.Console.exe install-plugin *.zip
+```
+
 ### Python 开发工具
 
 TODO
