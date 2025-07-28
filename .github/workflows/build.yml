@@ -80,10 +80,10 @@ jobs:
             -r ${{ matrix.platform[1] }} \
             --no-self-contained
 
-          bin_dir=${{ env.plugin-proj-path }}/$plugin/bin/Release/net*/${{ matrix.platform[1]}}/
+          bin_dir=${{ env.plugin-proj-path }}/$plugin/bin/Release/net*/
           zip_path=$(pwd)/artifact/$plugin.zip
 
-          cd $bin_dir && zip -r $zip_path ./* -x "*.pdb"
+          cd $bin_dir && mv ${{ matrix.platform[1]}} $plugin && zip -r $zip_path ./* -x "*.pdb"
         done
 
     - name: Upload Build Artifact
