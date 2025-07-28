@@ -1,0 +1,48 @@
+name: Release
+
+env:
+  solution-name: csharp/OpenSvip.sln
+  NUGET_PACKAGES: ${{ github.workspace }}/.nuget/packages
+  dotnet-version: "7.0.x"
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  build:
+    name: Build executable for ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [windows-latest, macos-latest, ubuntu-latest]
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+      with:
+        submodules: recursive
+
+    # Install the .NET Core workload
+    - name: Install .NET Core
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: ${{ env.dotnet-version }}
+        cache: true
+
+    - name: Restore
+      run: dotnet restore ${{ env.solution-name }} --locked-mode
+
+    - name: Build
+      run: dotnet build ${{ env.solution-name }} --configuration Release --no-restore
+
+    - name: Upload Build Artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: ${{ matrix.os }}-build-output
+        path: |
+          **/bin/Release/
