@@ -54,10 +54,11 @@ jobs:
           --self-contained \
           -p:PublishSingleFile=true \
           -p:PublishReadyToRun=true \
-          -p:IncludeNativeLibrariesForSelfExtract=true \
-          -p:PublishDir=out/${{ matrix.platform[1] }}/
+          -p:IncludeNativeLibrariesForSelfExtract=true
 
-        zip -r artifact/OpenSvip-Console-${{ matrix.platform[1] }}.zip ${{ env.cli-proj-path }}/out/${{ matrix.platform[1] }}/* -x "*.pdb"
+        out_dir=${{ env.cli-proj-path }}/bin/Release/net*/${{ matrix.platform[1] }}/
+
+        zip -r artifact/OpenSvip-Console-${{ matrix.platform[1] }}.zip -C $out_dir -x "*.pdb"
 
     - name: Build Plugins
       shell: bash
@@ -68,10 +69,11 @@ jobs:
           dotnet build ${{ env.plugin-proj-path }}/$plugin \
             -c Release \
             -r ${{ matrix.platform[1] }} \
-            --no-self-contained \
-            -p:PublishDir=out/${{ matrix.platform[1] }}/
+            --no-self-contained
 
-          zip -r artifact/OpenSvip-Plugin-$plugin-${{ matrix.platform[1] }}.zip ${{ env.plugin-proj-path }}/$plugin/out/${{ matrix.platform[1]}}/* -x "*.pdb"
+          out_dir=${{ env.plugin-proj-path }}/$plugin/bin/Release/net*/${{ matrix.platform[1]}}/
+
+          zip -r artifact/OpenSvip-Plugin-$plugin-${{ matrix.platform[1] }}.zip -C $out_dir -x "*.pdb"
         done
 
     - name: Upload Build Artifact
