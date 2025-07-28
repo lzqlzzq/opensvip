@@ -68,7 +68,7 @@ jobs:
         root_dir=$(pwd)
 
         for plugin in ${{ env.plugins }}; do
-          cd root_dir
+          cd $root_dir
 
           dotnet build ${{ env.plugin-proj-path }}/$plugin \
             -c Release \
