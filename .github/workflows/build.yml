@@ -2,7 +2,6 @@ name: Release
 
 env:
   solution-name: csharp/OpenSvip.sln
-  NUGET_PACKAGES: ${{ github.workspace }}/.nuget/packages
   dotnet-version: "7.0.x"
 
 on:
@@ -32,10 +31,9 @@ jobs:
       uses: actions/setup-dotnet@v4
       with:
         dotnet-version: ${{ env.dotnet-version }}
-        cache: true
 
     - name: Restore
-      run: dotnet restore ${{ env.solution-name }} --locked-mode
+      run: dotnet restore ${{ env.solution-name }}
 
     - name: Build
       run: dotnet build ${{ env.solution-name }} --configuration Release --no-restore
