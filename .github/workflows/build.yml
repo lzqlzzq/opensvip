@@ -76,7 +76,7 @@ jobs:
             --no-self-contained
 
           bin_dir=${{ env.plugin-proj-path }}/$plugin/bin/Release/net*/${{ matrix.platform[1]}}/
-          zip_path=$(pwd)/artifact/OpenSvip-Plugin-$plugin-${{ matrix.platform[1] }}.zip
+          zip_path=$(pwd)/artifact/$plugin.zip
 
           cd $bin_dir && zip -r $zip_path ./* -x "*.pdb"
         done
@@ -84,4 +84,5 @@ jobs:
     - name: Upload Build Artifact
       uses: actions/upload-artifact@v4
       with:
+        name: ${{ matrix.platform }}
         path: artifact/*.zip
