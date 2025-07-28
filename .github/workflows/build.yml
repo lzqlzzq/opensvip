@@ -55,11 +55,10 @@ jobs:
           --self-contained \
           -p:PublishSingleFile=true \
           -p:PublishReadyToRun=true \
-          -p:IncludeNativeLibrariesForSelfExtract=true
+          -p:IncludeNativeLibrariesForSelfExtract=true \
+          -p:PublishDir=out/publish/${{ matrix.platform[1] }}/
 
-        ls ${{ env.cli-proj-path }}/bin/Release/net*/${{ matrix.platform[1] }}/publish
-
-        zip artifact/OpenSvip-Console-${{ matrix.platform[1] }}.zip -x "*.pdb" ${{ env.cli-proj-path }}/bin/Release/net*/${{ matrix.platform[1] }}/publish/*
+        zip -r artifact/OpenSvip-Console-${{ matrix.platform[1] }}.zip -x "*.pdb" out/publish/${{ matrix.platform[1] }}/*
 
     - name: Build Plugins
       run: |
