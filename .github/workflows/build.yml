@@ -62,9 +62,10 @@ jobs:
     - name: Build Plugins
       shell: bash
       run: |
+        plugins=${{ env.plugins }}
         set -e
 
-        for plugin in ${{ env.plugins }}; do
+        for plugin in "${plugins[@]}"; do
           dotnet build ${{ env.plugin-proj-path }}/$plugin \
             -c Release \
             -r ${{ matrix.platform[1] }} \
