@@ -58,7 +58,7 @@ jobs:
           -p:IncludeNativeLibrariesForSelfExtract=true \
           -p:PublishDir=out/${{ matrix.platform[1] }}/
 
-        zip -r artifact/OpenSvip-Console-${{ matrix.platform[1] }}.zip -x "*.pdb" ${{ env.cli-proj-path }}/out/${{ matrix.platform[1] }}/*
+        zip -r artifact/OpenSvip-Console-${{ matrix.platform[1] }}.zip ${{ env.cli-proj-path }}/out/${{ matrix.platform[1] }}/* -x "*.pdb"
 
     - name: Build Plugins
       run: |
@@ -71,7 +71,7 @@ jobs:
             --no-self-contained \
             -p:PublishDir=out/${{ matrix.platform[1] }}/
 
-          zip -r artifact/OpenSvip-Plugin-$plugin-${{ matrix.platform[1] }}.zip -x "*.pdb" ${{ env.plugin-proj-path }}/$plugin/out/${{ matrix.platform[1]}}/*
+          zip -r artifact/OpenSvip-Plugin-$plugin-${{ matrix.platform[1] }}.zip ${{ env.plugin-proj-path }}/$plugin/out/${{ matrix.platform[1]}}/* -x "*.pdb"
         done
 
     - name: Upload Build Artifact
