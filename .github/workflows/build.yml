@@ -56,8 +56,9 @@ jobs:
           -p:PublishSingleFile=true \
           -p:PublishReadyToRun=true \
           -p:IncludeNativeLibrariesForSelfExtract=true
-        pwd
-        ls
+
+        ls ${{ env.cli-proj-path }}/bin/Release/net*/${{ matrix.platform[1] }}/publish
+
         zip artifact/OpenSvip-Console-${{ matrix.platform[1] }}.zip -x "*.pdb" ${{ env.cli-proj-path }}/bin/Release/net*/${{ matrix.platform[1] }}/publish/*
 
     - name: Build Plugins
