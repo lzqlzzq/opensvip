@@ -1,8 +1,14 @@
 name: Release
 
 env:
-  solution-name: csharp/OpenSvip.sln
-  dotnet-version: "7.0.x"
+  solution-path: csharp/OpenSvip.sln
+  cli-proj-path: csharp/Console
+  plugin-proj-path: csharp/Plugins
+  dotnet-version: "7.0"
+  plugins:
+    - Midi
+    - SynthV
+
 
 on:
   workflow_dispatch:
@@ -13,12 +19,15 @@ on:
     branches: [ "main" ]
 
 jobs:
-  build:
-    name: Build executable for ${{ matrix.os }}
-    runs-on: ${{ matrix.os }}
+  build-exe:
+    name: Build executable and plugins for ${{ matrix.platform[0] }}
+    runs-on: ${{ matrix.platform[0] }}
     strategy:
       matrix:
-        os: [windows-latest, macos-latest, ubuntu-latest]
+        platform:
+          - [windows-latest, win-x64]
+          - [macos-latest, osx-arm64]
+          - [ubuntu-latest, linux-x64]
 
     steps:
     - name: Checkout
@@ -26,21 +35,52 @@ jobs:
       with:
         submodules: recursive
 
-    # Install the .NET Core workload
+    - name: Setup MSVC (32-bit)
+      if: ${{ matrix.platform[1] == 'win32' }}
+      uses: bus1/cabuild/action/msdevshell@e22aba57d6e74891d059d66501b6b5aed8123c4d  # v1
+      with:
+        architecture: 'x86'
+
     - name: Install .NET Core
       uses: actions/setup-dotnet@v4
       with:
         dotnet-version: ${{ env.dotnet-version }}
 
-    - name: Restore
-      run: dotnet restore ${{ env.solution-name }}
+    - name: Create Artifact Directory
+      run: mkdir artifact
 
-    - name: Build
-      run: dotnet build ${{ env.solution-name }} --configuration Release --no-restore
+    - name: Restore Denepndicies
+      run: dotnet restore ${{ env.solution-path }} \
+            -r ${{ matrix.platform[1] }}
+
+    - name: Build CLI
+      run: |
+        dotnet publish ${{ env.cli-proj-path }} \
+          -c Release \
+          -r ${{ matrix.platform[1] }} \
+          --self-contained \
+          --no-restore \
+          -p:PublishSingleFile=true \
+          -p:PublishReadyToRun=true \
+          -p:IncludeNativeLibrariesForSelfExtract=true
+
+        zip artifact/OpenSvip-Console-${{ matrix.platform }}.zip -x "*.pdb" ${{ env.cli-proj-path }}/bin/Release/*/${{ matrix.platform }}/publish/*
+
+    - name: Build Plugins
+      run: |
+        set -e
+
+        for plugin in ${{ env.plugins }}; do
+          dotnet build ${{ env.plugin-proj-path }}/$plugin \
+            -c Release \
+            -r ${{ matrix.platform[1] }} \
+            --no-restore \
+            --no-self-contained
+
+          zip -r artifact/OpenSvip-Plugin-$plugin-${{ matrix.platform }}.zip -x "*.pdb" ${{ env.plugin-proj-path }}/$plugin/bin/Release/net*/${{ matrix.platform[1]}}/*
+        done
 
     - name: Upload Build Artifact
       uses: actions/upload-artifact@v4
       with:
-        name: ${{ matrix.os }}-build-output
-        path: |
-          **/bin/Release/
+        path: artifact/*.zip
