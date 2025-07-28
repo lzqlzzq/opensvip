@@ -33,6 +33,11 @@ jobs:
       with:
         submodules: recursive
 
+    - name: Set Up `zip` (Windows)
+      if: ${{ contains(matrix.platform[1], 'win') }}
+      shell: pwsh
+      run: choco install zip -y
+
     - name: Install .NET Core
       uses: actions/setup-dotnet@v4
       with:
